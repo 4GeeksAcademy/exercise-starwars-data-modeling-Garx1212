@@ -7,47 +7,41 @@ from eralchemy2 import render_er
 
 Base = declarative_base()
 
-class Characters(Base):
+class Character(Base):
     __tablename__ = "characters"
-    id = Column(Integer, primary_key = True)
-    image_src = Column(String(500), nullable = False)
-    likes = Column(Integer, nullable = False) 
-    name = Column(String(100), nullable = False)
-    description = Column(String(500), nullable = False)
-    category = relationship("category")
-    favorites = relationship("favorites")
+    id = Column(Integer, primary_key=True)
+    image_src = Column(String(500), nullable=False)
+    likes = Column(Integer, nullable=False)
+    name = Column(String(100), nullable=False)
+    description = Column(String(500), nullable=False)
+    favorites = relationship('Favorites', back_populates='character')
 
-class Planets(Base):
+class Planet(Base):
     __tablename__ = "planets"
-    id = Column(Integer, primary_key = True)
-    image_src = Column(String(500), nullable = False)
-    likes = Column(Integer, nullable = False)
-    name = Column(String(100), nullable = False)
-    description = Column(String(500), nullable = False)
-    category = relationship("category")
-    favorites = relationship("favorites")
-
-class Category(Base):
-    __tablename__ = "category"
-    id = Column(Integer, primary_key = True)
-    description = Column(String(100), nullable = True)
-    characters_id = Column(Integer, ForeignKey("characters.id"), nullable = False)
-    planets_id = Column(Integer, ForeignKey("planets.id"), nullable = False)
+    id = Column(Integer, primary_key=True)
+    image_src = Column(String(500), nullable=False)
+    likes = Column(Integer, nullable=False)
+    name = Column(String(100), nullable=False)
+    description = Column(String(500), nullable=False)
+    favorites = relationship('Favorites', back_populates='planet')
 
 class Favorites(Base):
     __tablename__ = "favorites"
-    id = Column(Integer, primary_key = True)
-    name = Column(String(100), nullable = False)
-    favorite_posts = relationship("user")
-    characters_id = Column(Integer, ForeignKey("characters.id"), nullable = False)
-    planets_id = Column(Integer, ForeignKey("planets.id"), nullable = False)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    character_id = Column(Integer, ForeignKey('characters.id'))
+    planet_id = Column(Integer, ForeignKey('planets.id'))
+    user_id = Column(Integer, ForeignKey('user.id'))
+    character = relationship('Character', back_populates='favorites')
+    planet = relationship('Planet', back_populates='favorites')
+    user = relationship('User', back_populates='favorites')
 
 class User(Base):
     __tablename__ = "user"
-    id = Column(Integer, primary_key = True)
-    email = Column(String(30), nullable = False)
-    password = Column(String(500), nullable = False)
-    favorites_id = Column(Integer, ForeignKey("favorites.id"), nullable = False)
+    id = Column(Integer, primary_key=True)
+    email = Column(String(30), nullable=False)
+    password = Column(String(500), nullable=False)
+    favorites = relationship('Favorites', back_populates='user')
 
-## Draw from SQLAlchemy base
+# Draw from SQLAlchemy base
 render_er(Base, 'diagram.png')
